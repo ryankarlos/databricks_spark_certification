@@ -1,12 +1,9 @@
-import findspark
-
-findspark.init()
-
+from spark_session import create_spark_session
 from pyspark.sql import Row
 from pyspark.sql.types import *
-from pyspark.sql import SparkSession
 
-spark = SparkSession.builder.appName("rows").getOrCreate()
+# Create a SparkSession
+spark = create_spark_session("rows")
 
 schema = StructType(
     [

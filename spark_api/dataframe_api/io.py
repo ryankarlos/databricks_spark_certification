@@ -1,16 +1,9 @@
-import findspark
-
-findspark.init()
-findspark.find()
+from spark_session import create_spark_session
 
 # In Python, define a schema
 from pyspark.sql.types import *
-from pyspark.sql import SparkSession
 
-# Programmatic way to define a schema
-
-# Create a SparkSession
-spark = SparkSession.builder.appName("io").getOrCreate()
+spark = create_spark_session("io")
 
 fire_schema = StructType(
     [
@@ -45,16 +38,30 @@ fire_schema = StructType(
     ]
 )
 
+
 # Use the DataFrameReader interface to read a CSV file
-sf_fire_file = "e:/datasets/sf-fire/sf-fire-calls.csv"
-fire_df = spark.read.csv(sf_fire_file, header=True, schema=fire_schema)
-fire_df.show(10)
+def read_dataset(path="datasets/sf-fire/sf-fire-calls.csv", schema=fire_schema):
+    fire_df = spark.read.csv(path, header=True, schema=fire_schema)
+    return fire_df
 
 
-# use DataFrameWriter interface to save dataframe as parquet file or sql table
+def write_dataset(mode, path=None, table_name=None):
+    if mode == "file":
+        if path is None:
+            raise ValueError("path must be specified for saving as parquet file")
+        fire_df.write.format("parquet").save(path)
+    elif mode == "table":
+        if table_name is None:
+            raise ValueError("table name must be specified for saving as sql table")
+        fire_df.write.format("parquet").saveAsTable(table_name)
 
-parquet_path = "e:/datasets/sf-fire/fire-calls"
-fire_df.write.format("parquet").save(parquet_path)
 
-parquet_table = "fire_calls"
-fire_df.write.format("parquet").saveAsTable(parquet_table)
+# Main program
+if __name__ == "__main__":
+    fire_df = read_dataset()
+    fire_df.show(10)
+
+    # use DataFrameWriter interface to save dataframe as parquet file
+    write_dataset(mode="file", path="datasets/sf-fire/fire-calls")
+    # or sql table
+    write_dataset(mode="table", table_name="fire_calls")

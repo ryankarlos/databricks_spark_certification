@@ -1,15 +1,11 @@
-import findspark
-
-findspark.init()
-findspark.find()
-
-
-# In Python
+from spark_session import create_spark_session
 from pyspark.sql.types import *
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 
-#
+# Create a SparkSession
+spark = create_spark_session("schema")
+
+
 # define schema for our data
 schema = StructType(
     [
@@ -74,8 +70,6 @@ data = [
 ]
 # Main program
 if __name__ == "__main__":
-    # Create a SparkSession
-    spark = SparkSession.builder.appName("schema").getOrCreate()
 
     # Create dataframe
     blogs_df = spark.createDataFrame(data, schema)
@@ -90,4 +84,3 @@ if __name__ == "__main__":
     # show heavy hitters
     blogs_df.withColumn("Big Hitters", (expr("Hits > 10000"))).show()
     print(blogs_df.schema)
-
