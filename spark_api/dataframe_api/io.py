@@ -1,6 +1,4 @@
 from spark_session import create_spark_session
-
-# In Python, define a schema
 from pyspark.sql.types import *
 
 spark = create_spark_session("io")
@@ -40,28 +38,15 @@ fire_schema = StructType(
 
 
 # Use the DataFrameReader interface to read a CSV file
-def read_dataset_into_df(
-    path="datasets/sf-fire/sf-fire-calls.csv", schema=fire_schema, inferschema=False
-):
-    if inferschema:
-        fire_df = (
-            spark.read.option("header", True).option("inferSchema", True).csv(path)
-        )
-    else:
-        fire_df = spark.read.option("header", True).schema(schema).csv(path)
-    return fire_df
-
-
-# Use the DataFrameReader interface to read a CSV file
-def read_dataset_into_df(
-    path="datasets/sf-fire/sf-fire-calls.csv", schema=fire_schema, inferschema=False
-):
-    if inferschema:
-        fire_df = (
-            spark.read.option("header", True).option("inferSchema", True).csv(path)
-        )
-    else:
-        fire_df = spark.read.option("header", True).schema(schema).csv(path)
+def read_csv_into_df(path, schema, format="csv", infer_schema=False):
+    fire_df = (
+        spark.read.format(format)
+        .option("header", True)
+        .schema(schema)
+        .option("inferSchema", infer_schema)
+        .option("mode", "FAILFAST")
+        .load(path)
+    )
     return fire_df
 
 
@@ -78,10 +63,11 @@ def write_dataset(df, mode, path=None, table_name=None):
 
 # Main program
 if __name__ == "__main__":
-    fire_df = read_dataset_into_df()
+    path = "datasets/sf-fire/sf-fire-calls.csv"
+    fire_df = read_csv_into_df(path, fire_schema)
     fire_df.show(10)
 
-    ## create temp table in memory
+    # create temp table in memory
     fire_df.createOrReplaceTempView("Data")
     spark.sql("SELECT * FROM data WHERE CallType LIKE 'Medical%'").show(10)
 

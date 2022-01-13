@@ -1,10 +1,10 @@
 from spark_session import create_spark_session
 from pyspark.sql.functions import *
-from spark_api.dataframe_api.io import read_dataset_into_df
+from spark_api.dataframe_api.io import read_csv_into_df
 
 # Create a SparkSession
 spark = create_spark_session("filter")
-fire_df = read_dataset_into_df()
+fire_df = read_csv_into_df()
 
 new_fire_df = fire_df.withColumnRenamed("Delay", "ResponseDelayedinMins")
 (
