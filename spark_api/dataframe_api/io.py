@@ -40,28 +40,52 @@ fire_schema = StructType(
 
 
 # Use the DataFrameReader interface to read a CSV file
-def read_dataset(path="datasets/sf-fire/sf-fire-calls.csv", schema=fire_schema):
-    fire_df = spark.read.csv(path, header=True, schema=fire_schema)
+def read_dataset_into_df(
+    path="datasets/sf-fire/sf-fire-calls.csv", schema=fire_schema, inferschema=False
+):
+    if inferschema:
+        fire_df = (
+            spark.read.option("header", True).option("inferSchema", True).csv(path)
+        )
+    else:
+        fire_df = spark.read.option("header", True).schema(schema).csv(path)
     return fire_df
 
 
-def write_dataset(mode, path=None, table_name=None):
+# Use the DataFrameReader interface to read a CSV file
+def read_dataset_into_df(
+    path="datasets/sf-fire/sf-fire-calls.csv", schema=fire_schema, inferschema=False
+):
+    if inferschema:
+        fire_df = (
+            spark.read.option("header", True).option("inferSchema", True).csv(path)
+        )
+    else:
+        fire_df = spark.read.option("header", True).schema(schema).csv(path)
+    return fire_df
+
+
+def write_dataset(df, mode, path=None, table_name=None):
     if mode == "file":
         if path is None:
             raise ValueError("path must be specified for saving as parquet file")
-        fire_df.write.format("parquet").save(path)
+        df.write.option("compression", "snappy").mode("overwrite").parquet(path)
     elif mode == "table":
         if table_name is None:
             raise ValueError("table name must be specified for saving as sql table")
-        fire_df.write.format("parquet").saveAsTable(table_name)
+        df.write.mode("overwrite").saveAsTable(table_name)
 
 
 # Main program
 if __name__ == "__main__":
-    fire_df = read_dataset()
+    fire_df = read_dataset_into_df()
     fire_df.show(10)
 
+    ## create temp table in memory
+    fire_df.createOrReplaceTempView("Data")
+    spark.sql("SELECT * FROM data WHERE CallType LIKE 'Medical%'").show(10)
+
     # use DataFrameWriter interface to save dataframe as parquet file
-    write_dataset(mode="file", path="datasets/sf-fire/fire-calls")
+    write_dataset(fire_df, mode="file", path="datasets/sf-fire/fire-calls.parquet")
     # or sql table
-    write_dataset(mode="table", table_name="fire_calls")
+    write_dataset(fire_df, mode="table", table_name="fire_calls")
