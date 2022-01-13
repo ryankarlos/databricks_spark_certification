@@ -3,7 +3,7 @@ from pyspark.sql.types import *
 
 spark = create_spark_session("io")
 
-fire_schema = StructType(
+schema = StructType(
     [
         StructField("CallNumber", IntegerType(), True),
         StructField("UnitID", StringType(), True),
@@ -38,40 +38,62 @@ fire_schema = StructType(
 
 
 # Use the DataFrameReader interface to read a CSV file
-def read_csv_into_df(path, schema, format="csv", infer_schema=False):
-    fire_df = (
-        spark.read.format(format)
-        .option("header", True)
-        .schema(schema)
-        .option("inferSchema", infer_schema)
-        .option("mode", "FAILFAST")
-        .load(path)
-    )
-    return fire_df
+def read_dataset_into_df(path, format="parquet", infer_schema=True, schema=None):
+    if infer_schema:
+        df = (
+            spark.read.format(format)
+            .option("header", True)
+            .option("inferSchema", True)
+            .option("mode", "FAILFAST")
+            .load(path)
+        )
+    else:
+        assert schema is not None
+        df = (
+            spark.read.format(format)
+            .option("header", True)
+            .option("mode", "FAILFAST")
+            .schema(schema)
+            .load(path)
+        )
+    return df
 
 
-def write_dataset(df, mode, path=None, table_name=None):
+def write_dataset(df, mode, path, table_name=None):
     if mode == "file":
-        if path is None:
-            raise ValueError("path must be specified for saving as parquet file")
-        df.write.option("compression", "snappy").mode("overwrite").parquet(path)
+        df.write.format("parquet")\
+            .mode("overwrite")\
+            .option("compression", "snappy")\
+            .save(path)
+
     elif mode == "table":
         if table_name is None:
             raise ValueError("table name must be specified for saving as sql table")
-        df.write.mode("overwrite").saveAsTable(table_name)
+        (df.write.mode("overwrite").option("path", path).saveAsTable(table_name))
 
 
 # Main program
 if __name__ == "__main__":
-    path = "datasets/sf-fire/sf-fire-calls.csv"
-    fire_df = read_csv_into_df(path, fire_schema)
-    fire_df.show(10)
 
+    # parquet
+    file = "datasets/flights/summary-data/parquet/2010-summary.parquet/"
+    df = read_dataset_into_df(file)
     # create temp table in memory
-    fire_df.createOrReplaceTempView("Data")
-    spark.sql("SELECT * FROM data WHERE CallType LIKE 'Medical%'").show(10)
+    df.createOrReplaceTempView("Data")
+    spark.sql("SELECT * FROM data WHERE ORIGIN_COUNTRY_NAME LIKE '%States%' AND  DEST_COUNTRY_NAME='France'").show()
+    df.unpersist()
+
+    # csv
+    file = "datasets/flights/summary-data/csv/*"
+    df = read_dataset_into_df(file, "csv")
+    df.show(10)
+
+    # json
+    file = "datasets/flights/summary-data/json/*"
+    df = read_dataset_into_df(file, "json")
+    df.show(10)
 
     # use DataFrameWriter interface to save dataframe as parquet file
-    write_dataset(fire_df, mode="file", path="datasets/sf-fire/fire-calls.parquet")
+    write_dataset(df, mode="file", path="/tmp/data/parquet/df_parquet")
     # or sql table
-    write_dataset(fire_df, mode="table", table_name="fire_calls")
+    write_dataset(df, mode="table", path="datasets/flights/spark-warehouse/parquet", table_name="us_delay_flights_tbl")
