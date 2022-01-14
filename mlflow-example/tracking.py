@@ -13,7 +13,17 @@ import mlflow.spark
 import pandas as pd
 import sys
 
-spark = SparkSession.builder.appName("mlflow").getOrCreate()
+# increase spark driver memory (default 1gb) to avoid heap space warnings
+spark = (
+    SparkSession.builder.appName("mlflow")
+    .config("spark.sql.execution.arrow.pyspark.enabled", True)
+    .config("spark.driver.memory", "16G")
+    .config("spark.ui.showConsoleProgress", True)
+    .config("spark.sql.repl.eagerEval.enabled", True)
+    .getOrCreate()
+)
+# avoid str truncation warning
+spark.conf.set("spark.sql.debug.maxToStringFields", 100)
 
 filePath = str(sys.argv[1])
 params = {
@@ -71,7 +81,7 @@ def feature_importance(pipelineModel, vecAssembler):
     pandasDF.to_csv("results/feature-importance.csv", index=False)
     # Log artifact: feature importance scores.
     # First write to local filesystem, then tell MLflow where to find that file
-    mlflow.log_artifact("feature-importance.csv")
+    mlflow.log_artifact("results/feature-importance.csv")
     return pandasDF
 
 
