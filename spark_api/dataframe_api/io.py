@@ -70,6 +70,9 @@ if __name__ == "__main__":
                 StructField("count", LongType(), True),
         ]
     )
+
+    # or alternatively can define the schema using a DDL formatted string:
+    # schema="DEST_COUNTRY_NAME string, ORIGIN_COUNTRY_NAME string, count long"
     df = read_dataset_into_df(file, "json", schema=schema)
     df.show(10)
 
