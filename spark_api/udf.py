@@ -18,7 +18,7 @@ def pandas_multiply(v: pd.Series, s: pd.Series) -> pd.Series:
     return v * s
 
 if __name__ == "__main__":
-    file = "datasets/iot-devices/iot_devices.json"s
+    file = "datasets/iot-devices/iot_devices.json"
     df = read_dataset_into_df(file, "json")
 
     print("\n Using pandas udf:")
