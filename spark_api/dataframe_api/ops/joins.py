@@ -5,12 +5,13 @@ from timer import Timer
 spark = create_spark_session("join")
 
 emp = [
-    (1, "Smith", -1, "2018", "10", "M", 3000),
-    (2, "Rose", 1, "2010", "20", "M", 4000),
-    (3, "Williams", 1, "2010", "10", "M", 1000),
-    (4, "Jones", 2, "2005", "10", "F", 2000),
-    (5, "Brown", 2, "2010", "40", "", -1),
-    (6, "Brown", 2, "2010", "50", "", -1),
+    (1, "Smith", -1, "2018", 10, "M", 3000),
+    (2, "Rose", 1, "2010", 20, "M", 4000),
+    (3, "Williams", 1, "2010", 10, "M", 1000),
+    (4, "Jones", 2, "2005", 10, "F", 2000),
+    (5, "Brown", 2, "2010", 40, "", -1),
+    (6, "Brown", 2, "2010", 50, "", -1),
+    (7, "Baker", 3, "2011", 60, "", 1500),
 ]
 empColumns = [
     "emp_id",
@@ -71,16 +72,27 @@ if __name__ == "__main__":
             on=empDF.emp_dept_id == deptDF.dept_id,
             join_type="broadcast_hash",
         )
-    joined_df.explain("formatted")
-    joined_df.show(10)
+        joined_df.explain("formatted")
+        joined_df.show(10)
 
     with Timer():
         joined_df = spark_join(
             empDF,
             deptDF,
-            how="inner",
+            how="left",
+            on=empDF.emp_dept_id == deptDF.dept_id,
+            join_type="broadcast_hash",
+        )
+        joined_df.explain("formatted")
+        joined_df.show(10)
+
+    with Timer():
+        joined_df = spark_join(
+            empDF,
+            deptDF,
+            how="left",
             on=empDF.emp_dept_id == deptDF.dept_id,
             join_type="sort_merge",
         )
-    joined_df.explain("formatted")
-    joined_df.show(10)
+        joined_df.explain("formatted")
+        joined_df.show(10)

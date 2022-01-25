@@ -4,7 +4,8 @@ from spark_api.dataframe_api.io import read_dataset_into_df
 
 # Create a SparkSession
 spark = create_spark_session("filter")
-fire_df = read_dataset_into_df()
+file = "datasets/sf-fire/sf-fire-calls.csv"
+fire_df = read_dataset_into_df(file, format="csv")
 
 
 (
@@ -19,9 +20,6 @@ fire_df = read_dataset_into_df()
 
 (
     fire_df.select(
-        F.sum("NumAlarms"),
-        F.avg("Delay"),
-        F.min("Delay"),
-        F.max("Delay"),
+        F.sum("NumAlarms"), F.avg("Delay"), F.min("Delay"), F.max("Delay"),
     ).show()
 )

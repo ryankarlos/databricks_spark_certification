@@ -17,14 +17,21 @@ def multiply(v: pd.Series, s: pd.Series) -> pd.Series:
 def pandas_multiply(v: pd.Series, s: pd.Series) -> pd.Series:
     return v * s
 
+
 if __name__ == "__main__":
     file = "datasets/iot-devices/iot_devices.json"
     df = read_dataset_into_df(file, "json")
 
     print("\n Using pandas udf:")
     with Timer():
-        df.select("temp", "humidity", pandas_multiply(col("temp"), col("humidity")).alias("multiply")).show()
+        df.select(
+            "temp",
+            "humidity",
+            pandas_multiply(col("temp"), col("humidity")).alias("multiply"),
+        ).show()
 
     print("\n Using normal udf:")
     with Timer():
-        df.select("temp","humidity", multiply(col("temp"), col("humidity")).alias("multiply")).show()
+        df.select(
+            "temp", "humidity", multiply(col("temp"), col("humidity")).alias("multiply")
+        ).show()

@@ -65,9 +65,9 @@ if __name__ == "__main__":
 
     schema = StructType(
         [
-                StructField("DEST_COUNTRY_NAME", StringType(), True),
-                StructField("ORIGIN_COUNTRY_NAME", StringType(), True),
-                StructField("count", LongType(), True),
+            StructField("DEST_COUNTRY_NAME", StringType(), True),
+            StructField("ORIGIN_COUNTRY_NAME", StringType(), True),
+            StructField("count", LongType(), True),
         ]
     )
 

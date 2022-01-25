@@ -3,7 +3,7 @@ from spark_api.dataframe_api.io import read_dataset_into_df
 
 spark = create_spark_session("partitioning")
 
-df = read_dataset_into_df('datasets/loans/loan-risks.snappy.parquet', 'parquet')
+df = read_dataset_into_df("datasets/loans/loan-risks.snappy.parquet", "parquet")
 print(df.rdd.getNumPartitions())
 
 # Access SparkContext through SparkSession to get the number of cores or slots
