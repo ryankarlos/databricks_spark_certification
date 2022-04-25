@@ -33,6 +33,16 @@ For more options and variations of this command please refer to the AWS docs her
 https://docs.aws.amazon.com/cli/latest/reference/emr/create-cluster.html
 
 
+## Monitoring the cluster metrics 
+
+To montior cluster metrics in clouydwatch during usage, refer to https://docs.aws.amazon.com/emr/latest/ManagementGuide/UsingEMR_ViewingMetrics.html
+
+In cloudwatch -> all metrics -> Emr -> jobflowmetrics -> filter by cluster id e.g. j-B857LVXYQNH5-> tick the corresponding metrics  and see graph being updated. You can see the selected metrics in graph metrics tab lor run queires to get further insights
+
+<img src="https://github.com/ryankarlos/databricks_spark_certification/blob/master/screenshots/aws_emr_cluster_mertics_.png">
+
+<img src="https://github.com/ryankarlos/databricks_spark_certification/blob/master/screenshots/Memory_cluster_EMR.png">
+
 ### S3 uploads for large datasets
 
 S3 Transfer Acceleration helps you fully utilize your bandwidth, minimize the effect of distance on throughput, and is designed to ensure 
@@ -44,6 +54,8 @@ Therefore, in order to test it, one could use the Amazon S3 Transfer Acceleratio
 and non-accelerated upload speeds across Amazon S3 regions. The Speed Comparison tool uses multipart uploads to transfer a file from your browser 
 to various Amazon S3 regions with and without using Transfer Acceleration. You can access the Speed Comparison tool using the 
 link: https://s3-accelerate-speedtest.s3-accelerate.amazonaws.com/en/accelerate-speed-comparsion.html 
+
+<img height="500" width="800" src="https://github.com/ryankarlos/databricks_spark_certification/blob/master/screenshots/s3-transfer-acceleration-test.png">
 
 Alternatively, for testing the upload speed of Amazon S3 Transfer Acceleration for a specific file size, follow the instructions here:
 https://aws.amazon.com/premiumsupport/knowledge-center/upload-speed-s3-transfer-acceleration/  to install the required dependencies from linux command line.
