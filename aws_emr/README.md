@@ -1,4 +1,39 @@
-## S3 uploads for large datasets
+
+### Creating the EMR cluster
+
+This assumes you have data in S3 bucket and want to copy into hdfs as a step
+when creating the EMR cluster (based on s3_hdfs_copy_step.json). This enables 
+s3-transfer acceleration by using `s3-accelerate.amazonaws.com` endpoint (which assumes
+the respective S3 bucket has transfer acceleartion enabled (refer to `S3 uploads for 
+large datasets` section).  To disable this, modify to `--s3Endpoint=s3.amazonaws.com` 
+in json. If you want to skip this s3 to EMR upload step totally then ignore `--steps` 
+arg in the command below. 
+
+```
+aws emr create-cluster \
+--steps file://s3_hdfs_copy_step.json \
+--release-label emr-6.1.1 \
+--applications Name=Hadoop Name=Hive Name=Pig, Name=Spark \
+--ec2-attributes file://ec2_attributes.json \
+--instance-groups file://instancegroupconfig.json \
+--auto-scaling-role EMR_AutoScaling_DefaultRole \
+--scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
+--no-termination-protected \
+--auto-termination-policy 5000 \
+--ebs-root-volume-size 12
+```
+
+The command above creates an EMR cluster with spark and configuration for
+master and core nodes as speciifed in `instancegroupconfig.json` along with auto scaling
+limits. The VPC subnet and availability zones are speciifed in `ec2_attributes.json`.
+Finally, we set `--no-termination-protected` to allow manual termination of cluster
+and set `--auto-termination-policy` to just over 1.5 hrs so the cluster terminates automatically
+if in idle state for this time.
+For more options and variations of this command please refer to the AWS docs here: 
+https://docs.aws.amazon.com/cli/latest/reference/emr/create-cluster.html
+
+
+### S3 uploads for large datasets
 
 S3 Transfer Acceleration helps you fully utilize your bandwidth, minimize the effect of distance on throughput, and is designed to ensure 
 consistently fast data transfer to Amazon S3 regardless of your source’s location. The amount of acceleration primarily depends on your 
@@ -47,8 +82,7 @@ So, you can make use of AWS CLI in order to upload objects using multipart uploa
 when uploading, downloading, or copying a file,  S3 will automatically switch to multipart operations if the file reaches a given size threshold. However, in order to 
 improve upload performance  you can customize the values for multipart upload configuration i.e the values for multipart_threshold,  multipart_chunk size etc. 
 accordingly, in the default location of ~/.aws/config file.  So, the chunk size can be increased in the CLI in the ~/.aws/config file so that you have bigger chunk sizes and therefore less parts. Please refer the below document for more information:
-https://docs.aws.amazon.com/cli/latest/topic/s3-config.html  
-
+https://docs.aws.amazon.com/cli/latest/topic/s3-config.html
 
 ```
 $ aws configure set default.s3.multipart_chunksize 1GB
@@ -58,33 +92,4 @@ $ aws s3 cp ~/Documents/databricks_spark_certification/datasets/seattle_library/
 Completed 328.2 MiB/11.0 GiB (2.2 MiB/s) with 1 file(s) remaining  
 ```
 
-** Note: upload speed depends on many factors such as internet speed, file size and concurrency including network slowness or congestion from client’s end etc.
-
-### Creating the EMR cluster
-
-This assumes you have data in S3 bucket and want to copy into hdfs as a step
-when creating the EMR cluster (based on s3_hdfs_copy_step.json). If you want to
-skip this step then ignore `--steps` arg in the command below
-
-The command below will create an EMR cluster with spark and configuration for
-master and core nodes as speciifed in `instancegroupconfig.json` along with auto scaling
-limits. The VPC subnet and availability zones are speciifed in `ec2_attributes.json`.
-Finally, we set `--no-termination-protected` to allow manual termination of cluster
-and set `--auto-termination-policy` to just over 1.5 hrs so the cluster terminates automatically
-if in idle state for this time.
-For more options and variations of this command please refer to the AWS docs here: 
-https://docs.aws.amazon.com/cli/latest/reference/emr/create-cluster.html
-
-```
-aws emr create-cluster \
---steps file://s3_hdfs_copy_step.json \
---release-label emr-6.1.1 \
---applications Name=Hadoop Name=Hive Name=Pig, Name=Spark \
---ec2-attributes file://ec2_attributes.json \
---instance-groups file://instancegroupconfig.json \
---auto-scaling-role EMR_AutoScaling_DefaultRole \
---scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
---no-termination-protected \
---auto-termination-policy 5000 \
---ebs-root-volume-size 12
-```
+<b> Note: upload speed depends on many factors such as internet speed, file size and concurrency including network slowness or congestion from client’s end etc.
