@@ -25,7 +25,7 @@ $ sh aws_emr/create_cluster.sh false ec2-default 3600
 
 * with notebook execution set to true - script will continue running till notebook start execution
 complete. To do this, it needs to check cluster create status and wait for this to change 
-  to 'WAITING'. This can be between 5-10 mins depending on number of steps added to cluster creation
+  to 'WAITING'. This can be between 7-12 mins depending on number of steps added to cluster creation
   action
 
 ```
