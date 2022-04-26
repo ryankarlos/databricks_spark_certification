@@ -12,8 +12,9 @@ of the  EC2 key-pair (set this up on AWS console if not previously) and store pr
 key on local machine. Third arg is desired timeout threhsold  in secs after which the 
 cluster auto-terminates if idle
 
+* with no notebook execution
 ```
- databricks_spark_certification $ sh aws_emr/create_cluster.sh true ec2-default 3600
+$ sh aws_emr/create_cluster.sh false ec2-default 3600
 
 {
     "ClusterId": "j-8KHU17PIRVI0",
@@ -22,10 +23,25 @@ cluster auto-terminates if idle
 
 ```
 
-or to run without steps - pass in fourth arg as empty string 
+* with notebook execution set to true - script will continue running till notebook start execution
+complete. To do this, it needs to check cluster create status and wait for this to change 
+  to 'WAITING'. This can be between 5-10 mins depending on number of steps added to cluster creation
+  action
 
 ```
- databricks_spark_certification $ sh aws_emr/create_cluster.sh true 5000 ec2-default 3600 ""
+$ sh aws_emr/create_cluster.sh true ec2-default 3600
+
+{
+    "ClusterId": "j-8KHU17PIRVI0",
+    "ClusterArn": "arn:aws:elasticmapreduce:us-east-1:376337229415:cluster/j-8KHU17PIRVI0"
+}
+
+```
+
+* or to run without steps - pass in fourth arg as empty string 
+
+```
+$ sh aws_emr/create_cluster.sh true 5000 ec2-default 3600 ""
 ```
 
 ### ssh into master node

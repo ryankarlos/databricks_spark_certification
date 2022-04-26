@@ -1,7 +1,7 @@
 
 START_NOTEBOOK=${1:-true}
-KEYNAME=${2-ec2-default}
-TIMEOUT=${3-3600}
+KEYNAME=${2:-ec2-default}
+TIMEOUT=${3:-3600}
 STEPS=${4:-s3_hdfs_copy_step.json}
 
 CMD=~/Documents/databricks_spark_certification/aws_emr/
@@ -19,15 +19,12 @@ then
   --release-label emr-6.1.1 \
    --service-role EMR_DefaultRole \
   --applications Name=Hadoop Name=Hive Name=Pig Name=Spark \
-  --ec2-attributes KeyName="$KEYNAME",SubnetId=subnet-0abc547ac8d132f33,\
-  InstanceProfile=EMR_EC2_DefaultRole,\
-  EmrManagedMasterSecurityGroup=sg-073cab3660129538a,\
-  EmrManagedSlaveSecurityGroup=sg-0ddd53fcdbb613680 \
+  --ec2-attributes KeyName="${KEYNAME}",SubnetId=subnet-0abc547ac8d132f33,InstanceProfile=EMR_EC2_DefaultRole,EmrManagedMasterSecurityGroup=sg-073cab3660129538a,EmrManagedSlaveSecurityGroup=sg-0ddd53fcdbb613680 \
   --instance-groups file://instancegroupconfig.json \
   --auto-scaling-role EMR_AutoScaling_DefaultRole \
   --scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
   --no-termination-protected \
-  --auto-termination-policy IdleTimeout="$TIMEOUT" \
+  --auto-termination-policy IdleTimeout="${TIMEOUT}" \
   --log-uri s3://aws-logs-376337229415-us-east-1/elasticmapreduce/ \
   --enable-debugging
 else
@@ -36,15 +33,12 @@ else
   --release-label emr-6.1.1 \
    --service-role EMR_DefaultRole \
   --applications Name=Hadoop Name=Hive Name=Pig Name=Spark \
-  --ec2-attributes KeyName="$KEYNAME",SubnetId=subnet-0abc547ac8d132f33,\
-  InstanceProfile=EMR_EC2_DefaultRole,\
-  EmrManagedMasterSecurityGroup=sg-073cab3660129538a,\
-  EmrManagedSlaveSecurityGroup=sg-0ddd53fcdbb613680 \
+  --ec2-attributes KeyName="${KEYNAME}",SubnetId=subnet-0abc547ac8d132f33,InstanceProfile=EMR_EC2_DefaultRole,EmrManagedMasterSecurityGroup=sg-073cab3660129538a,EmrManagedSlaveSecurityGroup=sg-0ddd53fcdbb613680 \
   --instance-groups file://instancegroupconfig.json \
   --auto-scaling-role EMR_AutoScaling_DefaultRole \
   --scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
   --no-termination-protected \
-  --auto-termination-policy IdleTimeout="$TIMEOUT" \
+  --auto-termination-policy IdleTimeout="${TIMEOUT}" \
   --log-uri s3://aws-logs-376337229415-us-east-1/elasticmapreduce/ \
   --enable-debugging
 fi;
@@ -52,15 +46,17 @@ fi;
 
 if [ $? -eq 0 ];
 then
-echo "Creation time: $CREATION_TIME"
+echo ""
+echo "Cluster Creation time: $CREATION_TIME"
 fi;
-
 
 if [[ ${START_NOTEBOOK} -eq true ]];
 then
   STATUS=$(aws emr list-clusters --created-after "$CREATION_TIME" --active --query 'Clusters[].Status.State|[0]') || exit
   STATUS=$(echo $STATUS|xargs)   # remove quotes on 'WAITING' to allow str comparison
-
+  echo ""
+  echo "Checking cluster status is in 'WAITING' state before notebook start execution ...."
+  echo""
   while [[ ${STATUS} != "WAITING" ]];
   do
     echo "Cluster status still on: $STATUS. Waiting for a minute, before checking again"
