@@ -1,9 +1,8 @@
 
 TIMEOUT=${1}
-STEPS=${2:-s3_hdfs_copy_step.json}
-KEYNAME=${3:-ec2-default}
+KEYNAME=${2}
+STEPS=${3:-s3_hdfs_copy_step.json}
 EBS_VOL=${4:-12}
-
 
 CMD=~/Documents/databricks_spark_certification/aws_emr/
 

@@ -7,10 +7,12 @@ s3-transfer acceleration by using `s3-accelerate.amazonaws.com` endpoint (which 
 the respective S3 bucket has transfer acceleartion enabled (refer to `S3 uploads for 
 large datasets` section).  To disable this, modify to `--s3Endpoint=s3.amazonaws.com` 
 in json. Run the bash script below and pass in first arg which is desired timeout threhsold 
-in secs after which the cluster auto-terminates if idle
+in secs after which the cluster auto-terminates if idle and second arg is the name of the
+EC2 key-pair (set this up on AWS console if not previously) and store private key on 
+local machine.
 
 ```
- databricks_spark_certification $ sh aws_emr/create_cluster.sh 5000
+ databricks_spark_certification $ sh aws_emr/create_cluster.sh 5000 ec2-default
 
 {
     "ClusterId": "j-8KHU17PIRVI0",
@@ -25,6 +27,50 @@ or to run without steps - pass empty string to second arg
  databricks_spark_certification $ sh aws_emr/create_cluster.sh 5000 ""
 ```
 
+### ssh into master node
+
+Once cluster has been setup - we can ssh into master node by following command.
+we will need to first change permissions on file to allow only read-only access. Otherwise you will get 
+an error like: `Permissions 0644 for 'youramazon.pem' are too open. It is recommended that your private key files are NOT accessible by others.
+This private key will be ignored.`
+
+
+Then run the ssh command with path to where you private key is stored and the 
+dns of the master node (which you can get from the cluster summary on console or via cli)
+
+```
+$ chmod 400 <PRIVATE-KEY>
+$ ssh -i <PATH-TO-PRIVATE-KEY> hadoop@<MASTER-PUBLIC_DNS>
+
+
+
+Last login: Tue Apr 26 00:16:33 2022
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+42 package(s) needed for security, out of 80 available
+Run "sudo yum update" to apply all updates.
+                                                                    
+EEEEEEEEEEEEEEEEEEEE MMMMMMMM           MMMMMMMM RRRRRRRRRRRRRRR    
+E::::::::::::::::::E M:::::::M         M:::::::M R::::::::::::::R   
+EE:::::EEEEEEEEE:::E M::::::::M       M::::::::M R:::::RRRRRR:::::R 
+  E::::E       EEEEE M:::::::::M     M:::::::::M RR::::R      R::::R
+  E::::E             M::::::M:::M   M:::M::::::M   R:::R      R::::R
+  E:::::EEEEEEEEEE   M:::::M M:::M M:::M M:::::M   R:::RRRRRR:::::R 
+  E::::::::::::::E   M:::::M  M:::M:::M  M:::::M   R:::::::::::RR   
+  E:::::EEEEEEEEEE   M:::::M   M:::::M   M:::::M   R:::RRRRRR::::R  
+  E::::E             M:::::M    M:::M    M:::::M   R:::R      R::::R
+  E::::E       EEEEE M:::::M     MMM     M:::::M   R:::R      R::::R
+EE:::::EEEEEEEE::::E M:::::M             M:::::M   R:::R      R::::R
+E::::::::::::::::::E M:::::M             M:::::M RR::::R      R::::R
+EEEEEEEEEEEEEEEEEEEE MMMMMMM             MMMMMMM RRRRRRR      RRRRRR
+                                                                    
+[hadoop@ip-10-0-0-58 ~]$ 
+
+```
 
 The command above creates an EMR cluster with spark and configuration for
 master and core nodes as speciifed in `instancegroupconfig.json` along with auto scaling
