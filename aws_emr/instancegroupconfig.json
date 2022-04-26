@@ -5,16 +5,47 @@
         "InstanceGroupType": "MASTER",
         "InstanceType": "m5.xlarge"
     },
-    {
-        "InstanceCount": 3,
-        "Name": "MyCoreIG",
-        "InstanceGroupType": "CORE",
-        "InstanceType": "m5.xlarge",
-        "AutoScalingPolicy": {
-          "Constraints": {
-            "MinCapacity": 3,
-            "MaxCapacity": 6
+  {
+    "InstanceCount": 3,
+    "Name": "MyCoreIG",
+    "InstanceGroupType": "CORE",
+    "InstanceType": "m5.xlarge",
+    "AutoScalingPolicy": {
+      "Constraints": {
+        "MinCapacity": 3,
+        "MaxCapacity": 6
+      },
+      "Rules": [
+        {
+          "Name": "Default-scale-out",
+          "Description": "Replicates the default scale-out rule in the console for YARN memory.",
+          "Action": {
+            "SimpleScalingPolicyConfiguration": {
+              "AdjustmentType": "CHANGE_IN_CAPACITY",
+              "ScalingAdjustment": 1,
+              "CoolDown": 300
+            }
+          },
+          "Trigger": {
+            "CloudWatchAlarmDefinition": {
+              "ComparisonOperator": "LESS_THAN",
+              "EvaluationPeriods": 1,
+              "MetricName": "YARNMemoryAvailablePercentage",
+              "Namespace": "AWS/ElasticMapReduce",
+              "Period": 300,
+              "Threshold": 15,
+              "Statistic": "AVERAGE",
+              "Unit": "PERCENT",
+              "Dimensions": [
+                {
+                  "Key": "JobFlowId",
+                  "Value": "${emr.clusterId}"
+                }
+              ]
+            }
           }
         }
+      ]
     }
+  }
 ]

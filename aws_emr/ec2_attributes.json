@@ -1,9 +1,0 @@
-[
-    {
-        "SubnetId": "subnet-0abc547ac8d132f33",
-        "AvailabilityZone": "us-east-1a",
-        "InstanceProfile":"EMR_EC2_DefaultRole",
-        "EmrManagedMasterSecurityGroup": "sg-073cab3660129538a",
-        "EmrManagedSlaveSecurityGroup": "sg-0ddd53fcdbb613680",
-    }
-]

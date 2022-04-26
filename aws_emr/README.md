@@ -6,26 +6,29 @@ when creating the EMR cluster (based on s3_hdfs_copy_step.json). This enables
 s3-transfer acceleration by using `s3-accelerate.amazonaws.com` endpoint (which assumes
 the respective S3 bucket has transfer acceleartion enabled (refer to `S3 uploads for 
 large datasets` section).  To disable this, modify to `--s3Endpoint=s3.amazonaws.com` 
-in json. If you want to skip this s3 to EMR upload step totally then ignore `--steps` 
-arg in the command below. 
+in json. Run the bash script below and pass in first arg which is desired timeout threhsold 
+in secs after which the cluster auto-terminates if idle
 
 ```
-aws emr create-cluster \
---steps file://s3_hdfs_copy_step.json \
---release-label emr-6.1.1 \
---applications Name=Hadoop Name=Hive Name=Pig, Name=Spark \
---ec2-attributes file://ec2_attributes.json \
---instance-groups file://instancegroupconfig.json \
---auto-scaling-role EMR_AutoScaling_DefaultRole \
---scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
---no-termination-protected \
---auto-termination-policy 5000 \
---ebs-root-volume-size 12
+ databricks_spark_certification $ sh aws_emr/create_cluster.sh 5000
+
+{
+    "ClusterId": "j-8KHU17PIRVI0",
+    "ClusterArn": "arn:aws:elasticmapreduce:us-east-1:376337229415:cluster/j-8KHU17PIRVI0"
+}
+
 ```
+
+or to run without steps - pass empty string to second arg
+
+```
+ databricks_spark_certification $ sh aws_emr/create_cluster.sh 5000 ""
+```
+
 
 The command above creates an EMR cluster with spark and configuration for
 master and core nodes as speciifed in `instancegroupconfig.json` along with auto scaling
-limits. The VPC subnet and availability zones are speciifed in `ec2_attributes.json`.
+limits. The VPC subnet and availability zones are speciifed in `--ec2-attributes` values.
 Finally, we set `--no-termination-protected` to allow manual termination of cluster
 and set `--auto-termination-policy` to just over 1.5 hrs so the cluster terminates automatically
 if in idle state for this time.
