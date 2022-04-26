@@ -1,5 +1,5 @@
 
-### Creating the EMR cluster
+## Creating the EMR cluster
 
 This assumes you have data in S3 bucket and want to copy into hdfs as a step
 when creating the EMR cluster (based on s3_hdfs_copy_step.json). This enables 
@@ -153,7 +153,7 @@ In cloudwatch -> all metrics -> Emr -> jobflowmetrics -> filter by cluster id e.
 
 <img src="https://github.com/ryankarlos/databricks_spark_certification/blob/master/screenshots/Memory_cluster_EMR.png">
 
-### S3 uploads for large datasets
+## S3 uploads for large datasets
 
 <b Note: Data in S3 can be accessed directly from spark in EMR via `spark.read.csv(<path-to-s3>)` command.
 The following workflow is just for getting data into hdfs>
@@ -248,7 +248,7 @@ tail: `hdfs:///output/2016': Is a directory
 
 ```
 
-### Tearing down cluster resources 
+## Tearing down cluster resources 
 
 For terminating clusters to avoid incurring extra costs, run the bash script teardown_resources.sh. This checks for existing list of 
 active clusters (in waiting status) and terminates them. 
