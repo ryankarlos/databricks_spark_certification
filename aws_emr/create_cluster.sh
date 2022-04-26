@@ -6,7 +6,7 @@ STEPS=${4:-s3_hdfs_copy_step.json}
 
 CMD=~/Documents/databricks_spark_certification/aws_emr/
 
-echo "cd to dir containing config files $CMD"
+echo "changing to dir containing config files $CMD"
 cd ~/Documents/databricks_spark_certification/aws_emr/ || exit
 
 printf "\n Running emr create cluster command: \n"
@@ -67,6 +67,7 @@ if [[ ${START_NOTEBOOK} -eq true ]];
 then
   check_cluster_status
   echo ""
+  # Cluster status 'STARTING' (provisioning nodes_ -> 'RUNNING' (running steps) -> 'WAITING' (ready)
   echo "Checking cluster status is in 'WAITING' state before notebook start execution ...."
   echo""
   while [[ ${STATUS} != "WAITING" ]];
@@ -77,16 +78,19 @@ then
   done
 
   if [[ $? -eq 0 ]];
-  then
-    echo ""
-    echo "CLuster status now in WAITING state, so starting notebook execution"
-    get_cluster_id
-    aws emr --region us-east-1 \
-    start-notebook-execution \
-    --editor-id e-1VLA7UDB2TM65N23MXOLDAA48 \
-    --relative-path parking_ticket_violations.ipynb \
-    --notebook-execution-name test \
-    --execution-engine Id="${CLUSTER_ID}" \
-    --service-role EMR_Notebooks_DefaultRole
-  fi;
-fi;
+    then
+      echo ""
+      echo "CLuster status now in WAITING state, so starting notebook execution"
+      get_cluster_id
+      aws emr --region us-east-1 \
+      start-notebook-execution \
+      --editor-id e-1VLA7UDB2TM65N23MXOLDAA48 \
+      --relative-path parking_ticket_violations.ipynb \
+      --notebook-execution-name test \
+      --execution-engine Id="${CLUSTER_ID}" \
+      --service-role EMR_Notebooks_DefaultRole
+  fi
+fi
+
+
+echo "Script complete !"

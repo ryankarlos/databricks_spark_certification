@@ -31,9 +31,35 @@ complete. To do this, it needs to check cluster create status and wait for this 
 ```
 $ sh aws_emr/create_cluster.sh true ec2-default 3600
 
+
+changing to dir containing config files /Users/rk1103/Documents/databricks_spark_certification/aws_emr/
+
+ Running emr create cluster command: 
 {
-    "ClusterId": "j-8KHU17PIRVI0",
-    "ClusterArn": "arn:aws:elasticmapreduce:us-east-1:376337229415:cluster/j-8KHU17PIRVI0"
+    "ClusterId": "j-1DE5WQUU4DNHZ",
+    "ClusterArn": "arn:aws:elasticmapreduce:us-east-1:376337229415:cluster/j-1DE5WQUU4DNHZ"
+}
+
+Cluster Creation time: 2022-04-26T23:25:10
+
+Checking cluster status is in 'WAITING' state before notebook start execution ....
+
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in STARTING state. Waiting for a minute, before checking again
+Cluster status still in RUNNING state. Waiting for a minute, before checking again
+Cluster status still in RUNNING state. Waiting for a minute, before checking again
+
+CLuster status now in WAITING state, so starting notebook execution
+{
+    "NotebookExecutionId": "ex-J02SKBUZSN8BD2YCTXSA7MW022RP0"
 }
 
 ```
@@ -229,8 +255,9 @@ active clusters (in waiting status) and terminates them.
 ```
 $ sh aws_etl/datasets/teardown_resources.sh 
 
-Deleting cluster with id: j-3UZJRU19QI2AM
-Running command: 'emr terminate-clusters --cluster-id j-3UZJRU19QI2AM' ....
+Deleting cluster with id: j-1DE5WQUU4DNHZ
+Running command: 'emr terminate-clusters --cluster-id j-1DE5WQUU4DNHZ' ....
+Done
 ```
 
 If no active clusters, then should return the following message
