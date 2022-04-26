@@ -6,13 +6,14 @@ when creating the EMR cluster (based on s3_hdfs_copy_step.json). This enables
 s3-transfer acceleration by using `s3-accelerate.amazonaws.com` endpoint (which assumes
 the respective S3 bucket has transfer acceleartion enabled (refer to `S3 uploads for 
 large datasets` section).  To disable this, modify to `--s3Endpoint=s3.amazonaws.com` 
-in json. Run the bash script below and pass in first arg which is desired timeout threhsold 
-in secs after which the cluster auto-terminates if idle and second arg is the name of the
-EC2 key-pair (set this up on AWS console if not previously) and store private key on 
-local machine.
+in json. Run the bash script below and pass in first arg as true or false (if you want 
+script to also start notebook execution after cluster created). Second arg is the name 
+of the  EC2 key-pair (set this up on AWS console if not previously) and store private 
+key on local machine. Third arg is desired timeout threhsold  in secs after which the 
+cluster auto-terminates if idle
 
 ```
- databricks_spark_certification $ sh aws_emr/create_cluster.sh 5000 ec2-default
+ databricks_spark_certification $ sh aws_emr/create_cluster.sh true ec2-default 3600
 
 {
     "ClusterId": "j-8KHU17PIRVI0",
@@ -21,10 +22,10 @@ local machine.
 
 ```
 
-or to run without steps - pass empty string to second arg
+or to run without steps - pass in fourth arg as empty string 
 
 ```
- databricks_spark_certification $ sh aws_emr/create_cluster.sh 5000 ""
+ databricks_spark_certification $ sh aws_emr/create_cluster.sh true 5000 ec2-default 3600 ""
 ```
 
 ### ssh into master node
@@ -81,6 +82,24 @@ if in idle state for this time.
 For more options and variations of this command please refer to the AWS docs here: 
 https://docs.aws.amazon.com/cli/latest/reference/emr/create-cluster.html
 
+## Starting EMR notebook
+
+To run some spark queries in EMR notebook 
+
+```
+aws emr --region us-east-1 \
+start-notebook-execution \
+--editor-id e-1VLA7UDB2TM65N23MXOLDAA48 \
+--relative-path parking_ticket_violations.ipynb \
+--notebook-execution-name test \
+--execution-engine '{"Id" : "j-3UZJRU19QI2AM"}' \
+--service-role EMR_Notebooks_DefaultRole
+
+{
+    "NotebookExecutionId": "ex-J02SMG5VBOA7L6QMRR1D710S64V7S"
+}
+```
+
 
 ## Monitoring the cluster metrics 
 
@@ -93,6 +112,10 @@ In cloudwatch -> all metrics -> Emr -> jobflowmetrics -> filter by cluster id e.
 <img src="https://github.com/ryankarlos/databricks_spark_certification/blob/master/screenshots/Memory_cluster_EMR.png">
 
 ### S3 uploads for large datasets
+
+<b Note: Data in S3 can be accessed directly from spark in EMR via `spark.read.csv(<path-to-s3>)` command.
+The following workflow is just for getting data into hdfs>
+
 
 S3 Transfer Acceleration helps you fully utilize your bandwidth, minimize the effect of distance on throughput, and is designed to ensure 
 consistently fast data transfer to Amazon S3 regardless of your source’s location. The amount of acceleration primarily depends on your 
@@ -153,7 +176,7 @@ $ aws s3 cp ~/Documents/databricks_spark_certification/datasets/seattle_library/
 Completed 328.2 MiB/11.0 GiB (2.2 MiB/s) with 1 file(s) remaining  
 ```
 
-<b> Note: upload speed depends on many factors such as internet speed, file size and concurrency including network slowness or congestion from client’s end etc.
+<b Note: upload speed depends on many factors such as internet speed, file size and concurrency including network slowness or congestion from client’s end etc>
 
 
 To spot check file location is all ok in hdfs and contents, ssh into master node as described
@@ -181,4 +204,23 @@ tail: `hdfs:///output/2016': Is a directory
 8359500976,FZX4974,NY,PAS,06/08/2016,38,4DSD,HONDA,T,0,0,0,20160711,0043,43,43,362197,T201,P,1222P,,BX,I,S,Wood Ave,95ft W/of Virginia A,0,408,h1,,Y,0830A,0700P,BK,,2013,,0,04 2,38-Failure to Display Muni Rec,,,,,,,,,,,
 [hadoop@ip-10-0-0-58 ~]$ 
 
+```
+
+### Tearing down cluster resources 
+
+For terminating clusters to avoid incurring extra costs, run the bash script teardown_resources.sh. This checks for existing list of 
+active clusters (in waiting status) and terminates them. 
+```
+$ sh aws_etl/datasets/teardown_resources.sh 
+
+Deleting cluster with id: j-3UZJRU19QI2AM
+Running command: 'emr terminate-clusters --cluster-id j-3UZJRU19QI2AM' ....
+```
+
+If no active clusters, then should return the following message
+
+```
+$ sh aws_etl/datasets/teardown_resources.sh 
+
+No clusters to be deleted.
 ```

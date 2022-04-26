@@ -1,7 +1,7 @@
 [
     {
         "Name":"S3DistCp step",
-        "Args":["s3-dist-cp","--s3Endpoint=s3.amazonaws.com","--src=s3://big-datasets-over-gb/parking_violations//","--dest=hdfs:///output"],
+        "Args":["s3-dist-cp","--s3Endpoint=s3.amazonaws.com","--src=s3://big-datasets-over-gb/parking_violations/","--dest=hdfs:///output"],
         "ActionOnFailure":"CONTINUE",
         "Type":"CUSTOM_JAR",
         "Jar":"command-runner.jar"        
