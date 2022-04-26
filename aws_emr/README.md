@@ -154,3 +154,31 @@ Completed 328.2 MiB/11.0 GiB (2.2 MiB/s) with 1 file(s) remaining
 ```
 
 <b> Note: upload speed depends on many factors such as internet speed, file size and concurrency including network slowness or congestion from client’s end etc.
+
+
+To spot check file location is all ok in hdfs and contents, ssh into master node as described
+in the earlier section. Use Hadoop HDFS commands 
+https://data-flair.training/blogs/top-hadoop-hdfs-commands-tutorial/
+
+```
+[hadoop@ip-10-0-0-58 ~]$ hadoop fs -ls hdfs:///output
+Found 2 items
+drwxr-xr-x   - hadoop hadoop          0 2022-04-26 00:02 hdfs:///output/2016
+drwxr-xr-x   - hadoop hadoop          0 2022-04-26 00:02 hdfs:///output/2017
+
+
+[hadoop@ip-10-0-0-58 ~]$ hadoop fs -ls hdfs:///output/2016
+Found 1 items
+-rw-r--r--   1 hadoop hadoop 2151937808 2022-04-26 00:03 hdfs:///output/2016/parking_violations_2016.csv
+
+[hadoop@ip-10-0-0-58 ~]$ hadoop fs -tail hdfs:///output/2016
+tail: `hdfs:///output/2016': Is a directory
+[hadoop@ip-10-0-0-58 ~]$ hadoop fs -tail hdfs:///output/2016/parking_violations_2016.csv
+9500927,FFM1969,NY,PAS,06/08/2016,38,SUBN,TOYOT,T,25590,56890,78820,20161128,0043,43,43,362197,T201,P,1150A,,BX,O,1416,East Ave,,0,408,h1,,Y,0900A,0700P,BLUE,,2013,,0,04 2,38-Failure to Display Muni Rec,,,,,,,,,,,
+8359500940,2482082,IN,PAS,06/08/2016,51,VAN,FRUEH,T,73980,40404,40404,88880088,0043,43,43,362197,T201,P,1207P,,BX,F,1499,West St,,0,408,e3,,,,,WHITE,,0,,0,04 2,51-Sidewalk,,,,,,,,,,,
+8359500952,65919JW,NY,COM,06/08/2016,52,VAN,FRUEH,T,0,0,0,88888888,0043,43,43,362197,T201,P,1212P,,BX,I,W,Metropolitan Ave,0ft S/of Wood Rd,0,408,e4,,,,,BROWN,,2007,,0,04 2,52-Intersection,,,,,,,,,,,
+8359500964,68718MG,NY,COM,06/08/2016,82,PICK,DODGE,T,0,0,0,20170531,0043,43,43,362197,T201,P,1219P,,BX,I,S,Wood Ave,85ft W/of Virginia A,0,408,k1,,,,,WH,,2015,,0,04 2,82-Unaltered Commerc Vehicle,,,,,,,,,,,
+8359500976,FZX4974,NY,PAS,06/08/2016,38,4DSD,HONDA,T,0,0,0,20160711,0043,43,43,362197,T201,P,1222P,,BX,I,S,Wood Ave,95ft W/of Virginia A,0,408,h1,,Y,0830A,0700P,BK,,2013,,0,04 2,38-Failure to Display Muni Rec,,,,,,,,,,,
+[hadoop@ip-10-0-0-58 ~]$ 
+
+```
