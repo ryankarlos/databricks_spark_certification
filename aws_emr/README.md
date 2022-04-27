@@ -124,9 +124,21 @@ if in idle state for this time.
 For more options and variations of this command please refer to the AWS docs here: 
 https://docs.aws.amazon.com/cli/latest/reference/emr/create-cluster.html
 
-## Starting EMR notebook
+## Executing an EMR notebook
 
-To run some spark queries in EMR notebook 
+To automate execution of an existing EMR notebook, run the following 
+command. Each notebook execution also writes the updated notebook file in a 
+folder titled executions inside notebook storage location in the aws-emr-resources 
+bucket configured for EMR notebooks as below:
+
+aws-emr-resources-376337229415-us-east-1
+| notebooks
+    | e-1VLA7UDB2TM65N23MXOLDAA48 (notebook-id)
+        | executions
+            | ex-J02SWU1BN9LI8XJ2U56LIYY7ZYPYU (execution-id)
+
+The result of each execution is stored in a different folder named with execution id
+https://catalog.us-east-1.prod.workshops.aws/workshops/3c29bc13-0f30-42f7-9f97-4ce8e2ef9b17/en-US/building-pipeline
 
 ```
 aws emr --region us-east-1 \
