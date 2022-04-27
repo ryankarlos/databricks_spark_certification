@@ -3,17 +3,17 @@
         "InstanceCount": 1,
         "Name": "MyMasterIG",
         "InstanceGroupType": "MASTER",
-        "InstanceType": "m3.xlarge"
+        "InstanceType": "m6g.xlarge"
     },
   {
     "InstanceCount": 2,
     "Name": "MyCoreIG",
     "InstanceGroupType": "CORE",
-    "InstanceType": "m3.xlarge",
+    "InstanceType": "m6g.xlarge",
     "AutoScalingPolicy": {
       "Constraints": {
         "MinCapacity": 2,
-        "MaxCapacity": 4
+        "MaxCapacity": 5
       },
       "Rules": [
         {

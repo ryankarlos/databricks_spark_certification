@@ -7,16 +7,14 @@ s3-transfer acceleration by using `s3-accelerate.amazonaws.com` endpoint (which 
 the respective S3 bucket has transfer acceleartion enabled (refer to `S3 uploads for 
 large datasets` section).  To disable this, modify to `--s3Endpoint=s3.amazonaws.com` 
 in json. Run the bash script below and pass in first arg as true or false (if you want 
-script to also start notebook execution after cluster created). Second arg is the name 
-of the  EC2 key-pair (set this up on AWS console if not previously) and store private 
-key on local machine. Third arg is desired timeout threhsold  in secs after which the 
-cluster auto-terminates if idle
+script to also start notebook execution after cluster created). Second arg is desired 
+timeout threhsold  in secs after which the cluster auto-terminates if idle.
 
 * with no notebook execution (this is also the default setting and equivalent to 
   just running `sh aws_emr/create_cluster.sh`)
   
 ```
-$ sh aws_emr/create_cluster.sh false ec2-default 3600
+$ sh aws_emr/create_cluster.sh false 3600
 
 {
     "ClusterId": "j-8KHU17PIRVI0",
@@ -31,7 +29,7 @@ complete. To do this, it needs to check cluster create status and wait for this 
   action
 
 ```
-$ sh aws_emr/create_cluster.sh true ec2-default 3600
+$ sh aws_emr/create_cluster.sh true 3600
 
 
 changing to dir containing config files /Users/rk1103/Documents/databricks_spark_certification/aws_emr/
@@ -66,10 +64,10 @@ CLuster status now in WAITING state, so starting notebook execution
 
 ```
 
-* or to run without steps - pass in fourth arg as empty string 
+* or to run without steps - pass in third arg as empty string 
 
 ```
-$ sh aws_emr/create_cluster.sh true 5000 ec2-default 3600 ""
+$ sh aws_emr/create_cluster.sh true 3600 ""
 ```
 
 ### ssh into master node

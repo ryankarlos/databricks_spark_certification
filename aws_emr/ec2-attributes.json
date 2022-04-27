@@ -1,0 +1,8 @@
+{
+  "KeyName": "ec2-default",
+  "InstanceProfile": "EMR_EC2_DefaultRole",
+  "SubnetId": "subnet-0abc547ac8d132f33",
+  "EmrManagedSlaveSecurityGroup": "sg-0ddd53fcdbb613680",
+  "EmrManagedMasterSecurityGroup": "sg-073cab3660129538a"
+}
+

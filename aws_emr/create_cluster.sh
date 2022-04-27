@@ -1,8 +1,7 @@
 
 START_NOTEBOOK=${1:-false}
-KEYNAME=${2:-ec2-default}
-TIMEOUT=${3:-3600}
-STEPS=${4:-s3_hdfs_copy_step.json}
+TIMEOUT=${2:-3600}
+STEPS=${3:-s3_hdfs_copy_step.json}
 
 CMD=~/Documents/databricks_spark_certification/aws_emr/
 
@@ -14,35 +13,6 @@ printf "\n Running emr create cluster command: \n"
 # -1H for UTC time which what create cluster time is recorded in
 CREATION_TIME=$(echo $(date -v "-1H" "+%Y-%m-%dT%H:%M:%S"))
 
-if [[ -z $STEPS ]];
-then
-  aws emr create-cluster \
-  --release-label emr-6.1.1 \
-   --service-role EMR_DefaultRole \
-  --applications Name=Hadoop Name=Hive Name=Pig Name=Spark \
-  --ec2-attributes KeyName="${KEYNAME}",SubnetId=subnet-0abc547ac8d132f33,InstanceProfile=EMR_EC2_DefaultRole,EmrManagedMasterSecurityGroup=sg-073cab3660129538a,EmrManagedSlaveSecurityGroup=sg-0ddd53fcdbb613680 \
-  --instance-groups file://instancegroupconfig.json \
-  --auto-scaling-role EMR_AutoScaling_DefaultRole \
-  --scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
-  --no-termination-protected \
-  --auto-termination-policy IdleTimeout="${TIMEOUT}" \
-  --log-uri s3://aws-logs-376337229415-us-east-1/elasticmapreduce/ \
-  --enable-debugging
-else
-  aws emr create-cluster \
-  --steps file://"${STEPS}" \
-  --release-label emr-6.1.1 \
-   --service-role EMR_DefaultRole \
-  --applications Name=Hadoop Name=Hive Name=Pig Name=Spark \
-  --ec2-attributes KeyName="${KEYNAME}",SubnetId=subnet-0abc547ac8d132f33,InstanceProfile=EMR_EC2_DefaultRole,EmrManagedMasterSecurityGroup=sg-073cab3660129538a,EmrManagedSlaveSecurityGroup=sg-0ddd53fcdbb613680 \
-  --instance-groups file://instancegroupconfig.json \
-  --auto-scaling-role EMR_AutoScaling_DefaultRole \
-  --scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
-  --no-termination-protected \
-  --auto-termination-policy IdleTimeout="${TIMEOUT}" \
-  --log-uri s3://aws-logs-376337229415-us-east-1/elasticmapreduce/ \
-  --enable-debugging
-fi;
 
 check_cluster_status()
 {
@@ -57,13 +27,46 @@ CLUSTER_ID=$(aws emr list-clusters --cluster-states WAITING --query 'Clusters[].
 CLUSTER_ID=$(echo "$CLUSTER_ID"|xargs)
 }
 
+
+if [[ -z $STEPS ]];
+then
+    aws emr create-cluster \
+    --release-label emr-6.1.1 \
+     --service-role EMR_DefaultRole \
+    --applications Name=Hadoop Name=Hive Name=Pig Name=Spark \
+    --ec2-attributes file://ec2-attributes.json \
+    --instance-groups file://instancegroupconfig.json \
+    --auto-scaling-role EMR_AutoScaling_DefaultRole \
+    --scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
+    --no-termination-protected \
+    --auto-termination-policy IdleTimeout="${TIMEOUT}" \
+    --log-uri s3://aws-logs-376337229415-us-east-1/elasticmapreduce/ \
+    --enable-debugging
+else
+    aws emr create-cluster \
+    --steps file://"${STEPS}" \
+    --release-label emr-6.1.1 \
+     --service-role EMR_DefaultRole \
+    --applications Name=Hadoop Name=Hive Name=Pig Name=Spark \
+    --ec2-attributes file://ec2-attributes.json \
+    --instance-groups file://instancegroupconfig.json \
+    --auto-scaling-role EMR_AutoScaling_DefaultRole \
+    --scale-down-behavior TERMINATE_AT_TASK_COMPLETION \
+    --no-termination-protected \
+    --auto-termination-policy IdleTimeout="${TIMEOUT}" \
+    --log-uri s3://aws-logs-376337229415-us-east-1/elasticmapreduce/ \
+    --enable-debugging
+fi;
+
+
 if [ $? -eq 0 ];
 then
   echo ""
   echo "Cluster Creation time: $CREATION_TIME"
 fi;
 
-if [[ ${START_NOTEBOOK} -eq true ]];
+
+if [[ ${START_NOTEBOOK} = true ]];
 then
   check_cluster_status
   echo ""
@@ -91,6 +94,5 @@ then
       --service-role EMR_Notebooks_DefaultRole
   fi
 fi
-
 
 echo "Script complete !"
