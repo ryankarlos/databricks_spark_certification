@@ -12,7 +12,9 @@ of the  EC2 key-pair (set this up on AWS console if not previously) and store pr
 key on local machine. Third arg is desired timeout threhsold  in secs after which the 
 cluster auto-terminates if idle
 
-* with no notebook execution
+* with no notebook execution (this is also the default setting and equivalent to 
+  just running `sh aws_emr/create_cluster.sh`)
+  
 ```
 $ sh aws_emr/create_cluster.sh false ec2-default 3600
 
