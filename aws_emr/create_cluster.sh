@@ -1,5 +1,5 @@
 
-START_NOTEBOOK=${1:-true}
+START_NOTEBOOK=${1:-false}
 KEYNAME=${2:-ec2-default}
 TIMEOUT=${3:-3600}
 STEPS=${4:-s3_hdfs_copy_step.json}
