@@ -16,10 +16,15 @@ timeout threhsold  in secs after which the cluster auto-terminates if idle.
 ```
 $ sh aws_emr/create_cluster.sh false 3600
 
+
+ Running emr create cluster command: 
 {
-    "ClusterId": "j-8KHU17PIRVI0",
-    "ClusterArn": "arn:aws:elasticmapreduce:us-east-1:376337229415:cluster/j-8KHU17PIRVI0"
+    "ClusterId": "j-3GOQA3U911OMF",
+    "ClusterArn": "arn:aws:elasticmapreduce:us-east-1:376337229415:cluster/j-3GOQA3U911OMF"
 }
+
+Cluster Creation time: 2022-04-28T00:11:12
+Script complete !
 
 ```
 
@@ -61,6 +66,8 @@ CLuster status now in WAITING state, so starting notebook execution
 {
     "NotebookExecutionId": "ex-J02SKBUZSN8BD2YCTXSA7MW022RP0"
 }
+
+Script complete !
 
 ```
 
