@@ -132,4 +132,5 @@ dmypy.json
 .idea/
 parking_violations/
 seattle_library/
-mlruns/
+imlruns/
+.DS_Store
