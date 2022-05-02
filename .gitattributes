@@ -1,3 +1,4 @@
 datasets/* filter=lfs diff=lfs merge=lfs -tex
 
-*.ipynb *.html linguist-language=Python
+*.ipynb linguist-language=Python
+*.html linguist-language=Python
