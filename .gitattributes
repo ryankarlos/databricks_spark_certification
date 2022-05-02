@@ -1,4 +1,3 @@
 datasets/* filter=lfs diff=lfs merge=lfs -tex
-
+databricks_ml_workshop/* linguist-vendored
 *.ipynb linguist-language=Python
-*.html linguist-language=Python
